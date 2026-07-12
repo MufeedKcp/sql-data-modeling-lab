@@ -71,10 +71,10 @@ FROM datamodeling.staging_customers_scd2 AS staging
 LEFT JOIN datamodeling.dim_customers_scd2 AS dim
     ON staging.customer_id = dim.customer_id
     AND dim.is_current = 'Y'
-WHERE dim.customer_id IS NULL
+WHERE dim.customer_id IS NULL -- if new cust_id arrive this will insert into the dim table
 OR (
-    staging.first_name <> dim.first_name OR
-    staging.last_name <> dim.last_name OR
-    staging.phone <> dim.phone OR
-    staging.email <> dim.email
+    staging.first_name != dim.first_name OR
+    staging.last_name != dim.last_name OR
+    staging.phone != dim.phone OR
+    staging.email != dim.email -- if the current record is changed, it will also insert into dim table
 );
