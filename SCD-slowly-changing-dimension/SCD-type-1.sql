@@ -4,7 +4,8 @@
 
 
  `dim_customers` will act as the main dimension table, which stores the current state of customer data
- `staging_customers` will simulate incoming changes from the source system, such as updates to existing customer records or completely new customers.
+ `staging_customers` will simulate incoming changes from the source system, 
+    such as updates to existing customer records or completely new customers.
 
 */
 

@@ -40,3 +40,23 @@ VALUES
     (1001, 'John', 'Doe', '555-4321', 'john.doe@newemail.com'),   -- Updated email and phone for existing customer
     (1002, 'Jane', 'Smith', '555-9999', 'jane.smith@newemail.com'), -- Updated phone and email for existing customer
     (1004, 'Emily', 'Davis', '555-1111', 'emily.davis@example.com'); -- New customer record
+
+
+-- Step 1: Close out old records by setting end_date and is_current = 'N' 
+-- for existing customers who have changes
+UPDATE datamodeling.dim_customers_scd2
+SET end_date = NOW()
+AND is_current = 'N'
+WHERE customer_id IN (
+    SELECT 
+        staging.customer_id
+    FROM datamodeling.staging_customers_scd2 AS staging
+    JOIN datamodeling.dim_customers_scd2 AS dim
+        ON staging.customer_id = dim.customer_id
+    AND dim.is_current = 'Y' --- Only updating the current records
+    WHERE 
+        staging.first_name <> dim.first_name OR
+        staging.last_name <> dim.last_name OR
+        staging.phone <> dim.phone OR
+        staging.email <> dim.email
+);
