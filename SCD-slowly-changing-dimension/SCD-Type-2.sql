@@ -44,22 +44,17 @@ VALUES
 
 -- Step 1: Close out old records by setting end_date and is_current = 'N' 
 -- for existing customers who have changes
-UPDATE datamodeling.dim_customers_scd2
-SET end_date = NOW()
-AND is_current = 'N'
-WHERE customer_id IN (
-    SELECT 
-        staging.customer_id
-    FROM datamodeling.staging_customers_scd2 AS staging
-    JOIN datamodeling.dim_customers_scd2 AS dim
-        ON staging.customer_id = dim.customer_id
-    AND dim.is_current = 'Y' --- Only updating the current records
-    WHERE 
-        staging.first_name <> dim.first_name OR
-        staging.last_name <> dim.last_name OR
-        staging.phone <> dim.phone OR
-        staging.email <> dim.email
-);
+UPDATE datamodeling.dim_customers_scd2 AS dim
+JOIN datamodeling.staging_customers_scd2 AS staging
+	ON staging.customer_id = dim.customer_id
+    AND dim.is_current = 'Y' 
+SET end_date = NOW(), is_current = 'N'
+    WHERE
+        staging.first_name != dim.first_name OR
+        staging.last_name != dim.last_name OR
+        staging.phone != dim.phone OR
+        staging.email != dim.email
+;
 
 -- Step 2: Insert new records (updated or new customers)
 INSERT INTO datamodeling.dim_customers_scd2 (customer_id, first_name, last_name, phone, email, start_date, end_date, is_current)
