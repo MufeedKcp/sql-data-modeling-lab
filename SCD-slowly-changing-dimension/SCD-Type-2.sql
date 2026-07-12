@@ -60,3 +60,26 @@ WHERE customer_id IN (
         staging.phone <> dim.phone OR
         staging.email <> dim.email
 );
+
+-- Step 2: Insert new records (updated or new customers)
+INSERT INTO datamodeling.dim_customers_scd2 (customer_id, first_name, last_name, phone, email, start_date, end_date, is_current)
+SELECT 
+    staging.customer_id,
+    staging.first_name,
+    staging.last_name,
+    staging.phone,
+    staging.email,
+    NOW(),
+    NULL,
+    'Y'
+FROM datamodeling.staging_customers_scd2 AS staging
+LEFT JOIN datamodeling.dim_customers_scd2 AS dim
+    ON staging.customer_id = dim.customer_id
+    AND dim.is_current = 'Y'
+WHERE dim.customer_id IS NULL
+OR (
+    staging.first_name <> dim.first_name OR
+    staging.last_name <> dim.last_name OR
+    staging.phone <> dim.phone OR
+    staging.email <> dim.email
+);
