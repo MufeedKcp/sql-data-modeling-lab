@@ -41,3 +41,25 @@ VALUES
     (1002, 'Jane', 'Smith', '555-9999', 'jane.smith@newemail.com'),-- Updated phone and email for existing customer
     (1004, 'Emily', 'Davis', '555-1111', 'emily.davis@example.com'); -- New customer record
 
+
+
+-- Upsert from staging_customers_scd3 to dim_customers_scd3
+INSERT INTO datamodeling.dim_customers_scd3 (customer_id, first_name, last_name, phone, previous_phone, email, previous_email)
+SELECT customer_id, first_name, last_name, phone, NULL AS previous_phone, email, NULL AS previous_email
+FROM datamodeling.staging_customers_scd3
+ON DUPLICATE KEY UPDATE  -- Conflict target is `customer_id`
+    first_name = VALUES(first_name),
+    last_name = VALUES(last_name),
+
+    previous_phone = IF(datamodeling.dim_customers_scd3.phone != datamodeling.staging_customers_scd3.phone, -- Condition: Did the phone change?
+    datamodeling.dim_customers_scd3.phone,                  -- True: Yes, shift old phone to previous
+    datamodeling.dim_customers_scd3.previous_phone           -- False: No, leave previous_phone alone
+)
+    phone = VALUES(phone),                      -- Update with new phone
+    previous_phone = IF(
+    datamodeling.dim_customers_scd3.email != datamodeling.staging_customers_scd3.email, -- Condition: Did the phone change?
+    datamodeling.dim_customers_scd3.email,                  -- True: Yes, shift old phone to previous
+    datamodeling.dim_customers_scd3.email           -- False: No, leave previous_phone alone
+)
+    email = VALUES(email);                      -- Update with new email
+
