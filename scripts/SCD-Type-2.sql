@@ -43,11 +43,11 @@ VALUES
 
 
 -- Step 1: Close out old records by setting end_date and is_current = 'N' 
--- for existing customers who have changes
+-- for existing customers who have changes 
 UPDATE datamodeling.dim_customers_scd2 AS dim
 JOIN datamodeling.staging_customers_scd2 AS staging
 	ON staging.customer_id = dim.customer_id
-    AND dim.is_current = 'Y' 
+    AND dim.is_current = 'Y'  -- select only active records
 SET end_date = NOW(), is_current = 'N'
     WHERE
         staging.first_name != dim.first_name OR
