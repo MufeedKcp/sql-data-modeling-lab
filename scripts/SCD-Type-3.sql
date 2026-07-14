@@ -2,7 +2,7 @@
 DROP TABLE IF EXISTS dim_customers_scd3;
 
 -- Create dim_customers_scd3 table
-CREATE TABLE dim_customers_scd3 (
+CREATE TABLE datamodeling.dim_customers_scd3 (
     row_id SERIAL PRIMARY KEY,    -- Surrogate key that auto-increments
     customer_id INT UNIQUE,       -- Add UNIQUE constraint on customer_id
     first_name VARCHAR(50),
@@ -14,7 +14,7 @@ CREATE TABLE dim_customers_scd3 (
 );
 
 -- Insert initial data into dim_customers_scd3
-INSERT INTO dim_customers_scd3 (customer_id, first_name, last_name, phone, previous_phone, email, previous_email)
+INSERT INTO datamodeling.dim_customers_scd3 (customer_id, first_name, last_name, phone, previous_phone, email, previous_email)
 VALUES 
     (1001, 'John', 'Doe', '555-1234', NULL, 'john.doe@example.com', NULL),
     (1002, 'Jane', 'Smith', '555-5678', NULL, 'jane.smith@example.com', NULL),
@@ -22,10 +22,10 @@ VALUES
 
 
 -- Drop the table if it already exists to avoid duplication errors
-DROP TABLE IF EXISTS staging_customers_scd3;
+DROP TABLE IF EXISTS datamodeling.staging_customers_scd3;
 
 -- Create staging_customers_scd3 table
-CREATE TABLE staging_customers_scd3 (
+CREATE TABLE datamodeling.staging_customers_scd3 (
     row_id SERIAL PRIMARY KEY,    -- Surrogate key that auto-increments
     customer_id INT UNIQUE,       -- Add UNIQUE constraint on customer_id
     first_name VARCHAR(50),
@@ -35,7 +35,7 @@ CREATE TABLE staging_customers_scd3 (
 );
 
 -- Insert new and updated records into staging_customers_scd3
-INSERT INTO staging_customers_scd3 (customer_id, first_name, last_name, phone, email)
+INSERT INTO datamodeling.staging_customers_scd3 (customer_id, first_name, last_name, phone, email)
 VALUES 
     (1001, 'John', 'Doe', '555-4321', 'john.doe@newemail.com'),    -- Updated phone and email for existing customer
     (1002, 'Jane', 'Smith', '555-9999', 'jane.smith@newemail.com'),-- Updated phone and email for existing customer
